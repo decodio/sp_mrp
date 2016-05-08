@@ -412,8 +412,7 @@ class PurchaseCostDistributionLine(models.Model):
         string='Cost amount', digits_compute=dp.get_precision('Account'),
         compute='_compute_expense_amount')
     cost_ratio = fields.Float(
-        string='Unit cost', digits_compute=dp.get_precision('Account'),
-        compute='_compute_cost_ratio')
+        string='Unit cost', compute='_compute_cost_ratio')
     standard_price_new = fields.Float(
         string='New cost', digits_compute=dp.get_precision('Product Price'),
         compute='_compute_standard_price_new')
@@ -449,9 +448,7 @@ class PurchaseCostDistributionLineExpense(models.Model):
     expense_amount = fields.Float(
         string='Expense amount', default=0.0,
         digits_compute=dp.get_precision('Account'))
-    cost_ratio = fields.Float(
-        'Unit cost', default=0.0,
-        digits_compute=dp.get_precision('Account'))
+    cost_ratio = fields.Float('Unit cost', default=0.0)
 
 
 class PurchaseCostDistributionExpense(models.Model):
@@ -492,8 +489,20 @@ class PurchaseCostDistributionExpense(models.Model):
         comodel_name='account.invoice.line', string="Supplier invoice line",
         domain="[('invoice_id.type', '=', 'in_invoice'),"
                "('invoice_id.state', 'in', ('open', 'paid'))]")
+    invoice_id = fields.Many2one(
+        comodel_name='account.invoice', string="Invoice")
 
     @api.onchange('type')
     def onchange_type(self):
         if self.type and self.type.default_amount:
             self.expense_amount = self.type.default_amount
+
+    @api.onchange('invoice_line')
+    def onchange_invoice_line(self):
+        self.invoice_id = self.invoice_line.invoice_id.id
+        self.expense_amount = self.invoice_line.price_subtotal
+
+    @api.multi
+    def button_duplicate(self):
+        for expense in self:
+            expense.copy()
