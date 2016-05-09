@@ -37,7 +37,8 @@
         "wizard/stock_transfer_details_view.xml",
         "views/stock_quant_package_view.xml",
         "views/stock_picking_view.xml",
-        "reports/label_creator_palet_report.xml"
+        "reports/label_creator_palet_report.xml",
+        "reports/label_creator_palet_report2.xml"
     ],
     "installable": True,
 }
