@@ -13,32 +13,25 @@
         />
 
         <template id="label_creator_palet_report_document">
-          <!--t t-call="report.html_container"-->
             <t t-foreach="docs" t-as="o">
-                <!--t t-call="report.internal_layout"-->
                     <t t-foreach="o.packages_info" t-as="p">
                         <div class="page" style="margin: 0 auto; text-align: center;">
-                        <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', p.package.name, 600, 100)"
-                             style="width:300px;height:50px"/>
-                        <p><b>Package: </b><span t-field="p.package.name" /></p>
-                        <p><b>Gross Weight: </b><span t-field="p.gross_weight" /></p>
-
-                        <p style="page-break-after:always;">   </p>
                         <p><b>Client: </b><span t-field="o.partner_id" /></p>
                         <p><b>Address: </b><span t-field="o.partner_id.street" /></p>
                         <br/>
                         <p><b>Picking: </b><span t-field="o.name" /></p>
                         <br/>
+                        <p><b>Package: </b><span t-field="p.package.name" /></p>
                         <p><b>Number of lots: </b><t t-foreach="p.lots" t-as="lot"><span t-field="lot.name" />, </t></p>
                         <p><b>Type: </b><span t-field="p.package.ul_id.name" /></p>
                         <p><b>NET Weight: </b><span t-field="p.net_weight"/></p>
+                        <p><b>Gross Weight: </b><span t-field="p.gross_weight" /></p>
                         <p><b>Package number: </b><span t-field="p.sequence" /> de <span t-field="o.num_packages"/></p>
                         <br/>
                         </div>
                     </t>
-                <!--/t-->
-              </t>
-            <!--/t-->
+
+            </t>
         </template>
     </data>
 </openerp>

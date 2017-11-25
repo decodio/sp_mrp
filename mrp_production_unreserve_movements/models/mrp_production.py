@@ -39,6 +39,24 @@ class MrpProduction(models.Model):
                 not x.work_order or x.work_order.state == 'draft'))
         return moves.do_unreserve()
 
+    @api.multi
+    def check_unreserved_moves(self):
+        self.ensure_one()
+        moves = self.move_lines.filtered(
+            lambda x: x.state in ('assigned', 'done'))
+        if moves:
+            return False
+        return True
+
+    @api.multi
+    def action_confirm(self):
+        mo_to_confirm = self.filtered(lambda x: not x.product_lines or
+                                      not x.move_lines)
+        mo_no_confirm = self.filtered(lambda x: x.product_lines and
+                                      x.move_lines)
+        mo_no_confirm.write({'state': 'confirmed'})
+        return super(MrpProduction, mo_to_confirm).action_confirm()
+
 
 class MrpProductionWorkcenterLine(models.Model):
     _inherit = 'mrp.production.workcenter.line'

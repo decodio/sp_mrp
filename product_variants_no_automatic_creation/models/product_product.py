@@ -14,6 +14,18 @@ class ProductProduct(models.Model):
     name = fields.Char(related="product_tmpl_id.name")
 
     @api.multi
+    @api.depends('attribute_value_ids', 'attribute_value_ids.price_ids',
+                 'attribute_value_ids.price_ids.price_extra',
+                 'attribute_value_ids.price_ids.product_tmpl_id',
+                 'product_tmpl_id')
+    def _compute_price_extra(self):
+        for record in self:
+            record.price_extra = sum(
+                record.mapped('attribute_value_ids.price_ids').filtered(
+                    lambda x: (x.product_tmpl_id == record.product_tmpl_id)
+                    ).mapped('price_extra'))
+
+    @api.multi
     def _get_product_attributes_values_dict(self):
         # Retrieve first the attributes from template to preserve order
         res = self.product_tmpl_id._get_product_attributes_dict()
@@ -60,7 +72,7 @@ class ProductProduct(models.Model):
     @api.constrains('product_tmpl_id', 'attribute_value_ids')
     def _check_duplicity(self):
         for product in self:
-            domain = [('product_tmpl_id', '=', self.product_tmpl_id.id)]
+            domain = [('product_tmpl_id', '=', product.product_tmpl_id.id)]
             for value in product.attribute_value_ids:
                 domain.append(('attribute_value_ids', '=', value.id))
             other_products = self.search(domain)
@@ -81,7 +93,8 @@ class ProductProduct(models.Model):
         :raises: exceptions.ValidationError: If the check is not valid.
         """
         for product in self:
-            if bool(product.product_tmpl_id.attribute_line_ids -
+            if bool(product.product_tmpl_id.attribute_line_ids.mapped(
+                    'attribute_id') -
                     product.attribute_line_ids.mapped('attribute_id')):
                 raise exceptions.ValidationError(
                     _("You have to fill all the attributes values."))

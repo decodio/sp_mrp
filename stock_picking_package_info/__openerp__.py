@@ -23,6 +23,7 @@
 {
     "name": "Stock picking package info",
     "version": "8.0.1.1.0",
+    "license": "AGPL-3",
     "author": "OdooMRP team, "
               "AvanzOSC, "
               "Serv. Tecnol. Avanzados - Pedro M. Baeza",
@@ -37,8 +38,7 @@
         "wizard/stock_transfer_details_view.xml",
         "views/stock_quant_package_view.xml",
         "views/stock_picking_view.xml",
-        "reports/label_creator_palet_report.xml",
-        "reports/label_creator_palet_report2.xml"
+        "reports/label_creator_palet_report.xml"
     ],
     "installable": True,
 }
